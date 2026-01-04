@@ -73,10 +73,10 @@ const Reports = () => {
       isWithinInterval(new Date(e.date), dateRange)
     ), [expenses, dateRange]);
 
-  // Calculate stats
+  // Calculate stats - only completed appointments count towards revenue
   const totalRevenue = filteredAppointments
-    .filter(a => a.status === 'completed' || a.status === 'scheduled')
-    .reduce((sum, a) => sum + a.price, 0);
+    .filter(a => a.status === 'completed')
+    .reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
 
   const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
   const profit = totalRevenue - totalExpenses;
@@ -95,8 +95,8 @@ const Reports = () => {
           const monthStart = startOfMonth(month);
           const monthEnd = endOfMonth(month);
           const revenue = filteredAppointments
-            .filter(a => isWithinInterval(new Date(a.date), { start: monthStart, end: monthEnd }))
-            .reduce((sum, a) => sum + a.price, 0);
+            .filter(a => isWithinInterval(new Date(a.date), { start: monthStart, end: monthEnd }) && a.status === 'completed')
+            .reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
           const expenseTotal = filteredExpenses
             .filter(e => isWithinInterval(new Date(e.date), { start: monthStart, end: monthEnd }))
             .reduce((sum, e) => sum + e.amount, 0);
@@ -112,8 +112,8 @@ const Reports = () => {
         const weekStart = startOfWeek(week, { weekStartsOn: 1 });
         const weekEnd = endOfWeek(week, { weekStartsOn: 1 });
         const revenue = filteredAppointments
-          .filter(a => isWithinInterval(new Date(a.date), { start: weekStart, end: weekEnd }))
-          .reduce((sum, a) => sum + a.price, 0);
+          .filter(a => isWithinInterval(new Date(a.date), { start: weekStart, end: weekEnd }) && a.status === 'completed')
+          .reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
         const expenseTotal = filteredExpenses
           .filter(e => isWithinInterval(new Date(e.date), { start: weekStart, end: weekEnd }))
           .reduce((sum, e) => sum + e.amount, 0);
@@ -128,8 +128,8 @@ const Reports = () => {
       const dayStart = startOfDay(day);
       const dayEnd = endOfDay(day);
       const revenue = filteredAppointments
-        .filter(a => isWithinInterval(new Date(a.date), { start: dayStart, end: dayEnd }))
-        .reduce((sum, a) => sum + a.price, 0);
+        .filter(a => isWithinInterval(new Date(a.date), { start: dayStart, end: dayEnd }) && a.status === 'completed')
+        .reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
       const expenseTotal = filteredExpenses
         .filter(e => isWithinInterval(new Date(e.date), { start: dayStart, end: dayEnd }))
         .reduce((sum, e) => sum + e.amount, 0);
@@ -141,16 +141,18 @@ const Reports = () => {
     });
   }, [dateRange, filteredAppointments, filteredExpenses]);
 
-  // Top services
+  // Top services (only from completed appointments)
   const topServices = useMemo(() => {
+    const completedAppointmentsForServices = filteredAppointments.filter(a => a.status === 'completed');
     const serviceStats = new Map<string, { name: string; count: number; revenue: number }>();
-    filteredAppointments.forEach(a => {
+    completedAppointmentsForServices.forEach(a => {
       const existing = serviceStats.get(a.serviceId);
+      const revenue = a.finalPrice ?? a.price;
       if (existing) {
         existing.count++;
-        existing.revenue += a.price;
+        existing.revenue += revenue;
       } else {
-        serviceStats.set(a.serviceId, { name: a.serviceName, count: 1, revenue: a.price });
+        serviceStats.set(a.serviceId, { name: a.serviceName, count: 1, revenue });
       }
     });
     return Array.from(serviceStats.values())
@@ -158,16 +160,18 @@ const Reports = () => {
       .slice(0, 5);
   }, [filteredAppointments]);
 
-  // Top clients by visits
+  // Top clients by visits (only completed)
   const topClientsByVisits = useMemo(() => {
+    const completedAppointmentsForClients = filteredAppointments.filter(a => a.status === 'completed');
     const clientStats = new Map<string, { name: string; visits: number; revenue: number }>();
-    filteredAppointments.forEach(a => {
+    completedAppointmentsForClients.forEach(a => {
       const existing = clientStats.get(a.clientId);
+      const revenue = a.finalPrice ?? a.price;
       if (existing) {
         existing.visits++;
-        existing.revenue += a.price;
+        existing.revenue += revenue;
       } else {
-        clientStats.set(a.clientId, { name: a.clientName, visits: 1, revenue: a.price });
+        clientStats.set(a.clientId, { name: a.clientName, visits: 1, revenue });
       }
     });
     return Array.from(clientStats.values())
@@ -175,16 +179,18 @@ const Reports = () => {
       .slice(0, 5);
   }, [filteredAppointments]);
 
-  // Top clients by revenue
+  // Top clients by revenue (only completed)
   const topClientsByRevenue = useMemo(() => {
+    const completedAppointmentsForClients = filteredAppointments.filter(a => a.status === 'completed');
     const clientStats = new Map<string, { name: string; visits: number; revenue: number }>();
-    filteredAppointments.forEach(a => {
+    completedAppointmentsForClients.forEach(a => {
       const existing = clientStats.get(a.clientId);
+      const revenue = a.finalPrice ?? a.price;
       if (existing) {
         existing.visits++;
-        existing.revenue += a.price;
+        existing.revenue += revenue;
       } else {
-        clientStats.set(a.clientId, { name: a.clientName, visits: 1, revenue: a.price });
+        clientStats.set(a.clientId, { name: a.clientName, visits: 1, revenue });
       }
     });
     return Array.from(clientStats.values())
