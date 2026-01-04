@@ -26,17 +26,21 @@ const Dashboard = () => {
     isSameDay(new Date(a.date), today) && a.status === 'scheduled'
   );
 
-  // Today's revenue from scheduled appointments
-  const todayRevenue = todayAppointments.reduce((sum, a) => sum + a.price, 0);
+  // Today's revenue from completed appointments
+  const todayCompleted = appointments.filter((a) =>
+    isSameDay(new Date(a.date), today) && a.status === 'completed'
+  );
+  const todayRevenue = todayCompleted.reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
 
   // Monthly stats
   const monthlyAppointments = appointments.filter((a) =>
     isWithinInterval(new Date(a.date), { start: monthStart, end: monthEnd })
   );
 
+  // Only completed appointments count towards revenue
   const monthlyRevenue = monthlyAppointments
-    .filter((a) => a.status === 'completed' || a.status === 'scheduled')
-    .reduce((sum, a) => sum + a.price, 0);
+    .filter((a) => a.status === 'completed')
+    .reduce((sum, a) => sum + (a.finalPrice ?? a.price), 0);
 
   const monthlyExpenses = expenses
     .filter((e) => isWithinInterval(new Date(e.date), { start: monthStart, end: monthEnd }))

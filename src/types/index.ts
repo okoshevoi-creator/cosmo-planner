@@ -29,6 +29,7 @@ export interface Appointment {
   time: string;
   duration: number;
   price: number;
+  finalPrice?: number; // Suma finală la finalizare
   status: 'scheduled' | 'completed' | 'cancelled';
   notes?: string;
 }

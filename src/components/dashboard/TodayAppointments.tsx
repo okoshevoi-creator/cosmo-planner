@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Clock, User } from 'lucide-react';
+import { Clock, User, CheckCircle } from 'lucide-react';
 import { Appointment } from '@/types';
 import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import CompleteAppointmentDialog from '@/components/appointments/CompleteAppointmentDialog';
 
 interface TodayAppointmentsProps {
   appointments: Appointment[];
@@ -9,6 +12,9 @@ interface TodayAppointmentsProps {
 }
 
 const TodayAppointments = ({ appointments, onEdit }: TodayAppointmentsProps) => {
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState<Appointment | null>(null);
+
   const getStatusColor = (status: Appointment['status']) => {
     switch (status) {
       case 'completed':
@@ -18,6 +24,12 @@ const TodayAppointments = ({ appointments, onEdit }: TodayAppointmentsProps) => 
       default:
         return 'bg-primary/10 text-primary border-primary/20';
     }
+  };
+
+  const handleCompleteClick = (e: React.MouseEvent, appointment: Appointment) => {
+    e.stopPropagation();
+    setSelectedAppointment(appointment);
+    setCompleteDialogOpen(true);
   };
 
   return (
@@ -62,24 +74,45 @@ const TodayAppointments = ({ appointments, onEdit }: TodayAppointmentsProps) => 
                 </p>
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-sm font-semibold text-primary">
-                    {appointment.price} MDL
+                    {appointment.status === 'completed' && appointment.finalPrice !== undefined
+                      ? appointment.finalPrice
+                      : appointment.price} MDL
                   </span>
-                  <span
-                    className={cn(
-                      'text-[10px] px-2 py-0.5 rounded-full border font-medium',
-                      getStatusColor(appointment.status)
+                  <div className="flex items-center gap-2">
+                    {appointment.status === 'scheduled' && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="h-6 px-2 text-xs gap-1"
+                        onClick={(e) => handleCompleteClick(e, appointment)}
+                      >
+                        <CheckCircle className="h-3 w-3" />
+                        Finalizat
+                      </Button>
                     )}
-                  >
-                    {appointment.status === 'scheduled' && 'Programat'}
-                    {appointment.status === 'completed' && 'Finalizat'}
-                    {appointment.status === 'cancelled' && 'Anulat'}
-                  </span>
+                    <span
+                      className={cn(
+                        'text-[10px] px-2 py-0.5 rounded-full border font-medium',
+                        getStatusColor(appointment.status)
+                      )}
+                    >
+                      {appointment.status === 'scheduled' && 'Programat'}
+                      {appointment.status === 'completed' && 'Finalizat'}
+                      {appointment.status === 'cancelled' && 'Anulat'}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
           </motion.div>
         ))
       )}
+
+      <CompleteAppointmentDialog
+        open={completeDialogOpen}
+        onOpenChange={setCompleteDialogOpen}
+        appointment={selectedAppointment}
+      />
     </div>
   );
 };
