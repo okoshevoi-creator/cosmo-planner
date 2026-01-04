@@ -1,19 +1,17 @@
 import { motion } from 'framer-motion';
-import { Plus, Calendar, UserPlus, Sparkles } from 'lucide-react';
+import { Plus, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const actions = [
   { icon: Plus, label: 'Programare Nouă', color: 'bg-primary', path: '/appointments' },
   { icon: UserPlus, label: 'Client Nou', color: 'bg-accent', path: '/clients' },
-  { icon: Sparkles, label: 'Servicii', color: 'bg-sage', path: '/services' },
-  { icon: Calendar, label: 'Calendar', color: 'bg-gold', path: '/appointments' },
 ];
 
 const QuickActions = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="grid grid-cols-4 gap-3">
+    <div className="grid grid-cols-2 gap-3">
       {actions.map((action, index) => (
         <motion.button
           key={action.label}

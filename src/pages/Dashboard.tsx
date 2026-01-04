@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Calendar, Users, TrendingUp, Clock, Wallet, ArrowRight } from 'lucide-react';
+import { Calendar, Users, TrendingUp, Clock, ArrowRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { isSameDay, startOfMonth, endOfMonth, isWithinInterval } from 'date-fns';
 import PageHeader from '@/components/layout/PageHeader';
@@ -115,30 +115,6 @@ const Dashboard = () => {
             delay={0.4}
           />
         </div>
-
-        {/* Monthly Summary */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
-          className="bg-card rounded-2xl p-4 mb-6 border border-border/50 shadow-card"
-        >
-          <h3 className="text-sm font-semibold text-foreground mb-3">Sumar Lunar</h3>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="text-center">
-              <p className="text-lg font-bold text-primary">{monthlyRevenue} MDL</p>
-              <p className="text-xs text-muted-foreground">Venituri</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-destructive">{monthlyExpenses} MDL</p>
-              <p className="text-xs text-muted-foreground">Cheltuieli</p>
-            </div>
-            <div className="text-center">
-              <p className="text-lg font-bold text-accent">{monthlyRevenue - monthlyExpenses} MDL</p>
-              <p className="text-xs text-muted-foreground">Profit</p>
-            </div>
-          </div>
-        </motion.div>
 
         {/* Today's Appointments */}
         <motion.section
