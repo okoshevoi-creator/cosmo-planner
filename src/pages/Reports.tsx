@@ -125,7 +125,7 @@ const Reports = () => {
         .filter(e => isWithinInterval(new Date(e.date), { start: dayStart, end: dayEnd }))
         .reduce((sum, e) => sum + e.amount, 0);
       return {
-        label: format(day, 'EEE', { locale: ro }),
+        label: format(day, 'd'),
         revenue,
         expenses: expenseTotal,
       };
