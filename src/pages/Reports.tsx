@@ -6,8 +6,8 @@ import {
   PieChart, Pie, Cell, LineChart, Line 
 } from 'recharts';
 import { 
-  startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth, 
-  startOfQuarter, endOfQuarter, startOfYear, endOfYear, isWithinInterval, 
+  startOfDay, endOfDay, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
+  startOfYear, endOfYear, isWithinInterval, 
   format, subDays, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval
 } from 'date-fns';
 import { ro } from 'date-fns/locale';
@@ -19,13 +19,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { useData } from '@/context/DataContext';
 import { cn } from '@/lib/utils';
 
-type PeriodType = 'day' | 'week' | 'month' | 'quarter' | 'year' | 'custom';
+type PeriodType = 'month' | 'year' | 'custom';
 
 const periodLabels: Record<PeriodType, string> = {
-  day: 'Azi',
-  week: 'Săptămâna',
   month: 'Luna',
-  quarter: 'Trimestru',
   year: 'Anul',
   custom: 'Personalizat',
 };
@@ -42,14 +39,8 @@ const Reports = () => {
   const dateRange = useMemo(() => {
     const now = new Date();
     switch (period) {
-      case 'day':
-        return { start: startOfDay(now), end: endOfDay(now) };
-      case 'week':
-        return { start: startOfWeek(now, { weekStartsOn: 1 }), end: endOfWeek(now, { weekStartsOn: 1 }) };
       case 'month':
         return { start: startOfMonth(now), end: endOfMonth(now) };
-      case 'quarter':
-        return { start: startOfQuarter(now), end: endOfQuarter(now) };
       case 'year':
         return { start: startOfYear(now), end: endOfYear(now) };
       case 'custom':
