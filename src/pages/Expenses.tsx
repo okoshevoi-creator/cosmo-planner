@@ -131,7 +131,11 @@ const Expenses = () => {
             </motion.div>
           ) : (
             sortedExpenses.map((expense, index) => {
-              const config = categoryConfig[expense.category];
+              const config = categoryConfig[expense.category as keyof typeof categoryConfig] || {
+                label: expense.category,
+                icon: MoreHorizontal,
+                color: 'bg-muted text-muted-foreground border-border'
+              };
               const Icon = config.icon;
               
               return (
