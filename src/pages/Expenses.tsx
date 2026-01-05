@@ -1,34 +1,48 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Wallet, TrendingDown, Package, Wrench, Home, Zap, Megaphone, MoreHorizontal } from 'lucide-react';
+import { Plus, Wallet, TrendingDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { ro } from 'date-fns/locale';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import ExpenseDialog from '@/components/expenses/ExpenseDialog';
 import { Expense } from '@/types';
 import { cn } from '@/lib/utils';
 
-const categoryConfig: Record<Expense['category'], { label: string; icon: typeof Package; color: string }> = {
-  produse: { label: 'Produse', icon: Package, color: 'bg-primary/10 text-primary border-primary/20' },
-  ustensile: { label: 'Ustensile', icon: Wrench, color: 'bg-accent/20 text-accent-foreground border-accent/30' },
-  chirie: { label: 'Chirie', icon: Home, color: 'bg-sage/20 text-foreground border-sage/30' },
-  utilitati: { label: 'Utilități', icon: Zap, color: 'bg-gold/20 text-foreground border-gold/30' },
-  marketing: { label: 'Marketing', icon: Megaphone, color: 'bg-destructive/20 text-destructive border-destructive/30' },
-  altele: { label: 'Altele', icon: MoreHorizontal, color: 'bg-muted text-muted-foreground border-border' },
-};
+const categoryColors = [
+  'bg-primary/10 text-primary border-primary/20',
+  'bg-accent/20 text-accent-foreground border-accent/30',
+  'bg-sage/20 text-foreground border-sage/30',
+  'bg-gold/20 text-foreground border-gold/30',
+  'bg-destructive/20 text-destructive border-destructive/30',
+  'bg-muted text-muted-foreground border-border',
+];
 
 const Expenses = () => {
   const { expenses } = useData();
+  const { expenseCategories } = useSettings();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | undefined>();
-  const [activeCategory, setActiveCategory] = useState<Expense['category'] | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const categories = Object.keys(categoryConfig) as Expense['category'][];
+  // Build category config from settings
+  const categoryConfig = useMemo(() => {
+    const config: Record<string, { label: string; color: string }> = {};
+    expenseCategories.forEach((cat, index) => {
+      config[cat.name.toLowerCase()] = {
+        label: cat.name,
+        color: categoryColors[index % categoryColors.length],
+      };
+    });
+    return config;
+  }, [expenseCategories]);
+
+  const categories = expenseCategories.map(cat => cat.name.toLowerCase());
   
   const filteredExpenses = activeCategory
-    ? expenses.filter(e => e.category === activeCategory)
+    ? expenses.filter(e => e.category.toLowerCase() === activeCategory)
     : expenses;
 
   const sortedExpenses = [...filteredExpenses].sort((a, b) => 
@@ -45,6 +59,11 @@ const Expenses = () => {
   const handleEdit = (expense: Expense) => {
     setSelectedExpense(expense);
     setDialogOpen(true);
+  };
+
+  const getActiveCategoryLabel = () => {
+    if (!activeCategory) return 'Cheltuieli';
+    return categoryConfig[activeCategory]?.label || activeCategory;
   };
 
   return (
@@ -72,7 +91,7 @@ const Expenses = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
-                Total {activeCategory ? categoryConfig[activeCategory].label : 'Cheltuieli'}
+                Total {getActiveCategoryLabel()}
               </p>
               <p className="text-2xl font-display font-semibold text-foreground">
                 {totalExpenses.toLocaleString()} MDL
@@ -110,7 +129,7 @@ const Expenses = () => {
                   : 'bg-card text-muted-foreground border-border/50 hover:border-primary/50'
               )}
             >
-              {categoryConfig[category].label}
+              {categoryConfig[category]?.label || category}
             </button>
           ))}
         </motion.div>
@@ -131,12 +150,10 @@ const Expenses = () => {
             </motion.div>
           ) : (
             sortedExpenses.map((expense, index) => {
-              const config = categoryConfig[expense.category as keyof typeof categoryConfig] || {
+              const config = categoryConfig[expense.category.toLowerCase()] || {
                 label: expense.category,
-                icon: MoreHorizontal,
                 color: 'bg-muted text-muted-foreground border-border'
               };
-              const Icon = config.icon;
               
               return (
                 <motion.div
@@ -148,8 +165,8 @@ const Expenses = () => {
                   className="bg-card rounded-2xl p-4 border border-border/50 shadow-soft cursor-pointer hover:border-primary/30 transition-colors"
                 >
                   <div className="flex items-start gap-3">
-                    <div className={cn('p-2.5 rounded-xl', config.color.split(' ')[0])}>
-                      <Icon className="h-5 w-5" />
+                    <div className={cn('p-2.5 rounded-xl flex items-center justify-center', config.color.split(' ')[0])}>
+                      <Wallet className="h-5 w-5" />
                     </div>
                     
                     <div className="flex-1 min-w-0">
