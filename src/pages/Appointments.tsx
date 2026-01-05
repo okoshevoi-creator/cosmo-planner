@@ -2,21 +2,25 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, addDays, startOfWeek, isSameDay } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { ro, ru, enUS } from 'date-fns/locale';
 import PageHeader from '@/components/layout/PageHeader';
 import TodayAppointments from '@/components/dashboard/TodayAppointments';
 import { Button } from '@/components/ui/button';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import { cn } from '@/lib/utils';
 import AppointmentDialog from '@/components/appointments/AppointmentDialog';
 import { Appointment } from '@/types';
 
 const Appointments = () => {
   const { appointments } = useData();
+  const { t, language } = useSettings();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date(), { weekStartsOn: 1 }));
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | undefined>();
+
+  const dateLocale = language === 'ru' ? ru : language === 'en' ? enUS : ro;
 
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
@@ -46,8 +50,8 @@ const Appointments = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-12">
         <PageHeader
-          title="Programări"
-          subtitle={format(selectedDate, 'EEEE, d MMMM yyyy', { locale: ro })}
+          title={t('appointments.title')}
+          subtitle={format(selectedDate, 'EEEE, d MMMM yyyy', { locale: dateLocale })}
           action={
             <Button size="icon" className="rounded-xl shadow-soft" onClick={handleAddNew}>
               <Plus className="h-5 w-5" />
@@ -69,7 +73,7 @@ const Appointments = () => {
               <ChevronLeft className="h-5 w-5 text-muted-foreground" />
             </button>
             <span className="text-sm font-medium text-foreground">
-              {format(weekStart, 'MMMM yyyy', { locale: ro })}
+              {format(weekStart, 'MMMM yyyy', { locale: dateLocale })}
             </span>
             <button
               onClick={goToNextWeek}
@@ -101,7 +105,7 @@ const Appointments = () => {
                   )}
                 >
                   <span className="text-[10px] font-medium uppercase opacity-70">
-                    {format(day, 'EEE', { locale: ro })}
+                    {format(day, 'EEE', { locale: dateLocale })}
                   </span>
                   <span className="text-lg font-semibold mt-0.5">
                     {format(day, 'd')}
@@ -123,7 +127,7 @@ const Appointments = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-display font-semibold text-foreground">
-              {filteredAppointments.length} Programări
+              {t('appointments.count').replace('{count}', String(filteredAppointments.length))}
             </h2>
           </div>
           <TodayAppointments appointments={filteredAppointments} onEdit={handleEdit} />

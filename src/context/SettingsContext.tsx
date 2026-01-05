@@ -56,7 +56,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Dashboard
     'dashboard.title': 'Bun venit!',
-    'dashboard.todayRevenue': 'Venituri Azi',
+    'dashboard.todayRevenue': 'Venit Azi',
     'dashboard.monthlyRevenue': 'Venituri Luna',
     'dashboard.todayAppointments': 'Programări Azi',
     'dashboard.totalClients': 'Total Clienți',
@@ -64,6 +64,15 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.monthlyProfit': 'Profit Luna',
     'dashboard.quickActions': 'Acțiuni Rapide',
     'dashboard.todaySchedule': 'Programări Azi',
+    'dashboard.activeClients': 'Clienți Activi',
+    'dashboard.plannedHours': 'Ore Planificate',
+    'dashboard.thisMonth': 'Luna aceasta',
+    'dashboard.today': 'Azi',
+    'dashboard.viewAll': 'Vezi toate',
+    'dashboard.appointmentsFor': 'Ai {count} programări pentru azi',
+    'dashboard.goodMorning': 'Bună dimineața',
+    'dashboard.goodAfternoon': 'Bună ziua',
+    'dashboard.goodEvening': 'Bună seara',
     
     // Common
     'common.add': 'Adaugă',
@@ -76,6 +85,20 @@ const translations: Record<Language, Record<string, string>> = {
     'common.noData': 'Nu există date',
     'common.loading': 'Se încarcă...',
     'common.currency': 'MDL',
+    'common.all': 'Toate',
+    'common.registered': 'înregistrați',
+    'common.available': 'disponibile',
+    'common.min': 'min',
+    'common.visits': 'Vizite',
+    'common.totalSpent': 'Total cheltuit',
+    'common.lastVisit': 'Ultima vizită',
+    'common.searchClient': 'Caută client...',
+    'common.noExpenses': 'Nu ai cheltuieli înregistrate',
+    'common.addFirstExpense': 'Adaugă prima cheltuială',
+    'common.reservations': 'rezervări',
+    'common.completed': 'finalizate',
+    'common.startDate': 'Data început',
+    'common.endDate': 'Data sfârșit',
     
     // Settings
     'settings.title': 'Setări',
@@ -96,6 +119,19 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.backup': 'Backup Date',
     'settings.export': 'Exportă Date',
     'settings.import': 'Importă Date',
+    'settings.darkModeActive': 'Mod întunecat activ',
+    'settings.lightModeActive': 'Mod luminos activ',
+    'settings.backupDescription': 'Exportați sau importați datele aplicației pentru backup.',
+    'settings.categoryUpdated': 'Categoria a fost actualizată.',
+    'settings.categoryAdded': 'Categoria a fost adăugată.',
+    'settings.categoryDeleted': 'Categoria a fost ștearsă.',
+    'settings.editCategory': 'Modificați numele categoriei.',
+    'settings.addNewCategory': 'Adăugați o nouă categorie.',
+    'settings.success': 'Succes',
+    'settings.error': 'Eroare',
+    'settings.invalidFile': 'Fișierul nu este valid.',
+    'settings.dataExported': 'Datele au fost exportate cu succes!',
+    'settings.dataImported': 'Datele au fost importate cu succes!',
     
     // Reports
     'reports.title': 'Rapoarte',
@@ -109,11 +145,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reports.revenue': 'Venituri',
     'reports.expenses': 'Cheltuieli',
     'reports.profit': 'Profit',
-    'reports.totalAppointments': 'Total Programări',
+    'reports.totalAppointments': 'Programări',
     'reports.completedAppointments': 'Programări Finalizate',
     'reports.topServices': 'Top Servicii',
     'reports.loyalClients': 'Clienți Fideli',
     'reports.topRevenueClients': 'Clienți cu Venit Maxim',
+    'reports.revenueVsExpenses': 'Venituri vs Cheltuieli',
+    'reports.expenseBreakdown': 'Distribuție Cheltuieli',
+    'reports.noDataPeriod': 'Nu există date pentru această perioadă',
     
     // Appointments
     'appointments.title': 'Programări',
@@ -126,6 +165,7 @@ const translations: Record<Language, Record<string, string>> = {
     'appointments.scheduled': 'Programat',
     'appointments.completed': 'Finalizat',
     'appointments.cancelled': 'Anulat',
+    'appointments.count': '{count} Programări',
     
     // Clients
     'clients.title': 'Clienți',
@@ -135,6 +175,7 @@ const translations: Record<Language, Record<string, string>> = {
     'clients.email': 'Email',
     'clients.visits': 'Vizite',
     'clients.spent': 'Cheltuit',
+    'clients.registered': '{count} clienți înregistrați',
     
     // Services
     'services.title': 'Servicii',
@@ -143,6 +184,7 @@ const translations: Record<Language, Record<string, string>> = {
     'services.category': 'Categorie',
     'services.duration': 'Durată',
     'services.price': 'Preț',
+    'services.available': '{count} servicii disponibile',
     
     // Expenses
     'expenses.title': 'Cheltuieli',
@@ -151,6 +193,8 @@ const translations: Record<Language, Record<string, string>> = {
     'expenses.description': 'Descriere',
     'expenses.amount': 'Sumă',
     'expenses.date': 'Data',
+    'expenses.registered': '{count} cheltuieli înregistrate',
+    'expenses.total': 'Total',
   },
   ru: {
     // Navigation
@@ -173,6 +217,15 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.monthlyProfit': 'Прибыль за Месяц',
     'dashboard.quickActions': 'Быстрые Действия',
     'dashboard.todaySchedule': 'Записи Сегодня',
+    'dashboard.activeClients': 'Активные Клиенты',
+    'dashboard.plannedHours': 'Запланировано Часов',
+    'dashboard.thisMonth': 'В этом месяце',
+    'dashboard.today': 'Сегодня',
+    'dashboard.viewAll': 'Смотреть все',
+    'dashboard.appointmentsFor': 'У вас {count} записей на сегодня',
+    'dashboard.goodMorning': 'Доброе утро',
+    'dashboard.goodAfternoon': 'Добрый день',
+    'dashboard.goodEvening': 'Добрый вечер',
     
     // Common
     'common.add': 'Добавить',
@@ -185,6 +238,20 @@ const translations: Record<Language, Record<string, string>> = {
     'common.noData': 'Нет данных',
     'common.loading': 'Загрузка...',
     'common.currency': 'MDL',
+    'common.all': 'Все',
+    'common.registered': 'зарегистрировано',
+    'common.available': 'доступно',
+    'common.min': 'мин',
+    'common.visits': 'Визиты',
+    'common.totalSpent': 'Всего потрачено',
+    'common.lastVisit': 'Последний визит',
+    'common.searchClient': 'Найти клиента...',
+    'common.noExpenses': 'Нет зарегистрированных расходов',
+    'common.addFirstExpense': 'Добавить первый расход',
+    'common.reservations': 'бронирований',
+    'common.completed': 'завершено',
+    'common.startDate': 'Дата начала',
+    'common.endDate': 'Дата окончания',
     
     // Settings
     'settings.title': 'Настройки',
@@ -205,6 +272,19 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.backup': 'Резервное Копирование',
     'settings.export': 'Экспорт Данных',
     'settings.import': 'Импорт Данных',
+    'settings.darkModeActive': 'Тёмный режим активен',
+    'settings.lightModeActive': 'Светлый режим активен',
+    'settings.backupDescription': 'Экспортируйте или импортируйте данные приложения для резервного копирования.',
+    'settings.categoryUpdated': 'Категория обновлена.',
+    'settings.categoryAdded': 'Категория добавлена.',
+    'settings.categoryDeleted': 'Категория удалена.',
+    'settings.editCategory': 'Измените название категории.',
+    'settings.addNewCategory': 'Добавьте новую категорию.',
+    'settings.success': 'Успешно',
+    'settings.error': 'Ошибка',
+    'settings.invalidFile': 'Файл недействителен.',
+    'settings.dataExported': 'Данные успешно экспортированы!',
+    'settings.dataImported': 'Данные успешно импортированы!',
     
     // Reports
     'reports.title': 'Отчёты',
@@ -218,11 +298,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reports.revenue': 'Доходы',
     'reports.expenses': 'Расходы',
     'reports.profit': 'Прибыль',
-    'reports.totalAppointments': 'Всего Записей',
+    'reports.totalAppointments': 'Записи',
     'reports.completedAppointments': 'Завершённых Записей',
     'reports.topServices': 'Топ Услуг',
     'reports.loyalClients': 'Постоянные Клиенты',
     'reports.topRevenueClients': 'Клиенты с Макс. Доходом',
+    'reports.revenueVsExpenses': 'Доходы vs Расходы',
+    'reports.expenseBreakdown': 'Распределение Расходов',
+    'reports.noDataPeriod': 'Нет данных за этот период',
     
     // Appointments
     'appointments.title': 'Записи',
@@ -235,6 +318,7 @@ const translations: Record<Language, Record<string, string>> = {
     'appointments.scheduled': 'Запланировано',
     'appointments.completed': 'Завершено',
     'appointments.cancelled': 'Отменено',
+    'appointments.count': '{count} Записей',
     
     // Clients
     'clients.title': 'Клиенты',
@@ -244,6 +328,7 @@ const translations: Record<Language, Record<string, string>> = {
     'clients.email': 'Email',
     'clients.visits': 'Визиты',
     'clients.spent': 'Потрачено',
+    'clients.registered': '{count} клиентов зарегистрировано',
     
     // Services
     'services.title': 'Услуги',
@@ -252,6 +337,7 @@ const translations: Record<Language, Record<string, string>> = {
     'services.category': 'Категория',
     'services.duration': 'Длительность',
     'services.price': 'Цена',
+    'services.available': '{count} услуг доступно',
     
     // Expenses
     'expenses.title': 'Расходы',
@@ -260,6 +346,8 @@ const translations: Record<Language, Record<string, string>> = {
     'expenses.description': 'Описание',
     'expenses.amount': 'Сумма',
     'expenses.date': 'Дата',
+    'expenses.registered': '{count} расходов зарегистрировано',
+    'expenses.total': 'Всего',
   },
   en: {
     // Navigation
@@ -282,6 +370,15 @@ const translations: Record<Language, Record<string, string>> = {
     'dashboard.monthlyProfit': 'Monthly Profit',
     'dashboard.quickActions': 'Quick Actions',
     'dashboard.todaySchedule': 'Today Schedule',
+    'dashboard.activeClients': 'Active Clients',
+    'dashboard.plannedHours': 'Planned Hours',
+    'dashboard.thisMonth': 'This month',
+    'dashboard.today': 'Today',
+    'dashboard.viewAll': 'View all',
+    'dashboard.appointmentsFor': 'You have {count} appointments today',
+    'dashboard.goodMorning': 'Good morning',
+    'dashboard.goodAfternoon': 'Good afternoon',
+    'dashboard.goodEvening': 'Good evening',
     
     // Common
     'common.add': 'Add',
@@ -294,6 +391,20 @@ const translations: Record<Language, Record<string, string>> = {
     'common.noData': 'No data',
     'common.loading': 'Loading...',
     'common.currency': 'MDL',
+    'common.all': 'All',
+    'common.registered': 'registered',
+    'common.available': 'available',
+    'common.min': 'min',
+    'common.visits': 'Visits',
+    'common.totalSpent': 'Total spent',
+    'common.lastVisit': 'Last visit',
+    'common.searchClient': 'Search client...',
+    'common.noExpenses': 'No registered expenses',
+    'common.addFirstExpense': 'Add first expense',
+    'common.reservations': 'reservations',
+    'common.completed': 'completed',
+    'common.startDate': 'Start date',
+    'common.endDate': 'End date',
     
     // Settings
     'settings.title': 'Settings',
@@ -314,6 +425,19 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.backup': 'Data Backup',
     'settings.export': 'Export Data',
     'settings.import': 'Import Data',
+    'settings.darkModeActive': 'Dark mode active',
+    'settings.lightModeActive': 'Light mode active',
+    'settings.backupDescription': 'Export or import application data for backup.',
+    'settings.categoryUpdated': 'Category updated.',
+    'settings.categoryAdded': 'Category added.',
+    'settings.categoryDeleted': 'Category deleted.',
+    'settings.editCategory': 'Edit category name.',
+    'settings.addNewCategory': 'Add a new category.',
+    'settings.success': 'Success',
+    'settings.error': 'Error',
+    'settings.invalidFile': 'Invalid file.',
+    'settings.dataExported': 'Data exported successfully!',
+    'settings.dataImported': 'Data imported successfully!',
     
     // Reports
     'reports.title': 'Reports',
@@ -327,11 +451,14 @@ const translations: Record<Language, Record<string, string>> = {
     'reports.revenue': 'Revenue',
     'reports.expenses': 'Expenses',
     'reports.profit': 'Profit',
-    'reports.totalAppointments': 'Total Appointments',
+    'reports.totalAppointments': 'Appointments',
     'reports.completedAppointments': 'Completed Appointments',
     'reports.topServices': 'Top Services',
     'reports.loyalClients': 'Loyal Clients',
     'reports.topRevenueClients': 'Top Revenue Clients',
+    'reports.revenueVsExpenses': 'Revenue vs Expenses',
+    'reports.expenseBreakdown': 'Expense Breakdown',
+    'reports.noDataPeriod': 'No data for this period',
     
     // Appointments
     'appointments.title': 'Appointments',
@@ -344,6 +471,7 @@ const translations: Record<Language, Record<string, string>> = {
     'appointments.scheduled': 'Scheduled',
     'appointments.completed': 'Completed',
     'appointments.cancelled': 'Cancelled',
+    'appointments.count': '{count} Appointments',
     
     // Clients
     'clients.title': 'Clients',
@@ -353,6 +481,7 @@ const translations: Record<Language, Record<string, string>> = {
     'clients.email': 'Email',
     'clients.visits': 'Visits',
     'clients.spent': 'Spent',
+    'clients.registered': '{count} clients registered',
     
     // Services
     'services.title': 'Services',
@@ -361,6 +490,7 @@ const translations: Record<Language, Record<string, string>> = {
     'services.category': 'Category',
     'services.duration': 'Duration',
     'services.price': 'Price',
+    'services.available': '{count} services available',
     
     // Expenses
     'expenses.title': 'Expenses',
@@ -369,6 +499,8 @@ const translations: Record<Language, Record<string, string>> = {
     'expenses.description': 'Description',
     'expenses.amount': 'Amount',
     'expenses.date': 'Date',
+    'expenses.registered': '{count} expenses registered',
+    'expenses.total': 'Total',
   },
 };
 

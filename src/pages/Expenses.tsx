@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Wallet, TrendingDown } from 'lucide-react';
 import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { ro, ru, enUS } from 'date-fns/locale';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useData } from '@/context/DataContext';
@@ -22,10 +22,12 @@ const categoryColors = [
 
 const Expenses = () => {
   const { expenses } = useData();
-  const { expenseCategories } = useSettings();
+  const { expenseCategories, t, language } = useSettings();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedExpense, setSelectedExpense] = useState<Expense | undefined>();
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const dateLocale = language === 'ru' ? ru : language === 'en' ? enUS : ro;
 
   // Build category config from settings
   const categoryConfig = useMemo(() => {
@@ -62,7 +64,7 @@ const Expenses = () => {
   };
 
   const getActiveCategoryLabel = () => {
-    if (!activeCategory) return 'Cheltuieli';
+    if (!activeCategory) return t('expenses.title');
     return categoryConfig[activeCategory]?.label || activeCategory;
   };
 
@@ -70,8 +72,8 @@ const Expenses = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-12">
         <PageHeader
-          title="Cheltuieli"
-          subtitle={`${expenses.length} cheltuieli înregistrate`}
+          title={t('expenses.title')}
+          subtitle={t('expenses.registered').replace('{count}', String(expenses.length))}
           action={
             <Button size="icon" className="rounded-xl shadow-soft" onClick={handleAdd}>
               <Plus className="h-5 w-5" />
@@ -91,10 +93,10 @@ const Expenses = () => {
             </div>
             <div>
               <p className="text-sm text-muted-foreground">
-                Total {getActiveCategoryLabel()}
+                {t('expenses.total')} {getActiveCategoryLabel()}
               </p>
               <p className="text-2xl font-display font-semibold text-foreground">
-                {totalExpenses.toLocaleString()} MDL
+                {totalExpenses.toLocaleString()} {t('common.currency')}
               </p>
             </div>
           </div>
@@ -116,7 +118,7 @@ const Expenses = () => {
                 : 'bg-card text-muted-foreground border-border/50 hover:border-primary/50'
             )}
           >
-            Toate
+            {t('common.all')}
           </button>
           {categories.map((category) => (
             <button
@@ -143,9 +145,9 @@ const Expenses = () => {
               className="text-center py-12 text-muted-foreground"
             >
               <Wallet className="h-12 w-12 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">Nu ai cheltuieli înregistrate</p>
+              <p className="text-sm">{t('common.noExpenses')}</p>
               <Button variant="link" onClick={handleAdd} className="mt-2">
-                Adaugă prima cheltuială
+                {t('common.addFirstExpense')}
               </Button>
             </motion.div>
           ) : (
@@ -179,7 +181,7 @@ const Expenses = () => {
                         {expense.description}
                       </h3>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {format(expense.date, 'd MMMM yyyy', { locale: ro })}
+                        {format(expense.date, 'd MMMM yyyy', { locale: dateLocale })}
                       </p>
                       {expense.notes && (
                         <p className="text-xs text-muted-foreground mt-1 italic">
@@ -192,7 +194,7 @@ const Expenses = () => {
                       <p className="text-lg font-semibold text-destructive">
                         -{expense.amount.toLocaleString()}
                       </p>
-                      <p className="text-xs text-muted-foreground">MDL</p>
+                      <p className="text-xs text-muted-foreground">{t('common.currency')}</p>
                     </div>
                   </div>
                 </motion.div>
