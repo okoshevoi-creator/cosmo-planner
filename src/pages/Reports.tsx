@@ -1,10 +1,7 @@
 import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Users, Calendar, Sparkles, Wallet, DollarSign } from 'lucide-react';
-import { 
-  BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip, 
-  PieChart, Pie, Cell, LineChart, Line 
-} from 'recharts';
+import { XAxis, YAxis, ResponsiveContainer, Tooltip, LineChart, Line } from 'recharts';
 import { 
   startOfDay, endOfDay, startOfMonth, endOfMonth, startOfWeek, endOfWeek,
   startOfYear, endOfYear, isWithinInterval, 
@@ -307,29 +304,41 @@ const Reports = () => {
           />
         </div>
 
-        {/* Revenue vs Expenses Chart */}
+        {/* Revenue vs Expenses Chart - Line Chart for mobile */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
           className="bg-card rounded-2xl p-4 mb-6 border border-border/50 shadow-card"
         >
-          <h3 className="text-sm font-semibold text-foreground mb-4">
+          <h3 className="text-sm font-semibold text-foreground mb-2">
             Venituri vs Cheltuieli
           </h3>
-          <div className="h-48">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-primary" />
+              <span className="text-xs text-muted-foreground">Venituri</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-destructive" />
+              <span className="text-xs text-muted-foreground">Cheltuieli</span>
+            </div>
+          </div>
+          <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueChartData}>
+              <LineChart data={revenueChartData} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
                 <XAxis
                   dataKey="label"
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                  interval="preserveStartEnd"
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }}
+                  tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                  width={40}
                 />
                 <Tooltip
                   contentStyle={{
@@ -343,14 +352,28 @@ const Reports = () => {
                     name === 'revenue' ? 'Venituri' : 'Cheltuieli'
                   ]}
                 />
-                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="expenses" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-              </BarChart>
+                <Line 
+                  type="monotone" 
+                  dataKey="revenue" 
+                  stroke="hsl(var(--primary))" 
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: 'hsl(var(--primary))' }}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="expenses" 
+                  stroke="hsl(var(--destructive))" 
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: 'hsl(var(--destructive))' }}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </motion.div>
 
-        {/* Expense Breakdown */}
+        {/* Expense Breakdown - Horizontal bars for mobile */}
         {expenseBreakdown.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -361,35 +384,39 @@ const Reports = () => {
             <h3 className="text-sm font-semibold text-foreground mb-4">
               Distribuție Cheltuieli
             </h3>
-            <div className="h-48 flex items-center justify-center">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={expenseBreakdown}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={40}
-                    outerRadius={70}
-                    paddingAngle={2}
-                    dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                    labelLine={false}
-                  >
-                    {expenseBreakdown.map((entry, index) => (
-                      <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value: number) => [`${value} MDL`, 'Sumă']}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '12px',
-                      fontSize: '12px',
-                    }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
+            <div className="space-y-3">
+              {expenseBreakdown
+                .sort((a, b) => b.value - a.value)
+                .map((item, index) => {
+                  const maxValue = Math.max(...expenseBreakdown.map(e => e.value));
+                  const percentage = totalExpenses > 0 ? (item.value / totalExpenses) * 100 : 0;
+                  const barWidth = maxValue > 0 ? (item.value / maxValue) * 100 : 0;
+                  return (
+                    <div key={item.name} className="space-y-1">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center gap-2">
+                          <div 
+                            className="w-3 h-3 rounded-full" 
+                            style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                          />
+                          <span className="text-foreground font-medium">{item.name}</span>
+                        </div>
+                        <span className="text-muted-foreground">
+                          {item.value} MDL ({percentage.toFixed(0)}%)
+                        </span>
+                      </div>
+                      <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${barWidth}%` }}
+                          transition={{ duration: 0.5, delay: index * 0.1 }}
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </motion.div>
         )}
