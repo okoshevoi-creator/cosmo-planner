@@ -56,13 +56,37 @@ const Settings = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const data = exportData();
+    const fileName = `beauty-salon-backup-${new Date().toISOString().split('T')[0]}.json`;
     const blob = new Blob([data], { type: 'application/json' });
+    const file = new File([blob], fileName, { type: 'application/json' });
+
+    // Try using Web Share API for mobile devices
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: 'Backup Date Salon',
+        });
+        toast({
+          title: t('settings.export'),
+          description: 'Datele au fost exportate cu succes!',
+        });
+        return;
+      } catch (error) {
+        // User cancelled or share failed, fall through to download method
+        if ((error as Error).name === 'AbortError') {
+          return; // User cancelled, don't show error
+        }
+      }
+    }
+
+    // Fallback for desktop or if share API not available
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `beauty-salon-backup-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
