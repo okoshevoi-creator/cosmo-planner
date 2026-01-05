@@ -2,19 +2,23 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Search, Phone, Mail } from 'lucide-react';
 import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { ro, ru, enUS } from 'date-fns/locale';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import ClientDialog from '@/components/clients/ClientDialog';
 import { Client } from '@/types';
 
 const Clients = () => {
   const { clients } = useData();
+  const { t, language } = useSettings();
   const [searchQuery, setSearchQuery] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedClient, setSelectedClient] = useState<Client | undefined>();
+
+  const dateLocale = language === 'ru' ? ru : language === 'en' ? enUS : ro;
 
   const filteredClients = clients.filter((client) =>
     client.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -35,8 +39,8 @@ const Clients = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-12">
         <PageHeader
-          title="Clienți"
-          subtitle={`${clients.length} clienți înregistrați`}
+          title={t('clients.title')}
+          subtitle={t('clients.registered').replace('{count}', String(clients.length))}
           action={
             <Button size="icon" className="rounded-xl shadow-soft" onClick={handleAdd}>
               <Plus className="h-5 w-5" />
@@ -52,7 +56,7 @@ const Clients = () => {
         >
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
-            placeholder="Caută client..."
+            placeholder={t('common.searchClient')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-10 rounded-xl bg-card border-border/50 shadow-soft"
@@ -95,18 +99,18 @@ const Clients = () => {
                   <div className="flex items-center gap-4 mt-3 pt-3 border-t border-border/50">
                     <div className="text-center">
                       <p className="text-lg font-semibold text-primary">{client.totalVisits}</p>
-                      <p className="text-[10px] text-muted-foreground">Vizite</p>
+                      <p className="text-[10px] text-muted-foreground">{t('common.visits')}</p>
                     </div>
                     <div className="text-center">
-                      <p className="text-lg font-semibold text-accent">{client.totalSpent} MDL</p>
-                      <p className="text-[10px] text-muted-foreground">Total cheltuit</p>
+                      <p className="text-lg font-semibold text-accent">{client.totalSpent} {t('common.currency')}</p>
+                      <p className="text-[10px] text-muted-foreground">{t('common.totalSpent')}</p>
                     </div>
                     {client.lastVisit && (
                       <div className="text-center flex-1">
                         <p className="text-xs font-medium text-foreground">
-                          {format(client.lastVisit, 'd MMM', { locale: ro })}
+                          {format(client.lastVisit, 'd MMM', { locale: dateLocale })}
                         </p>
-                        <p className="text-[10px] text-muted-foreground">Ultima vizită</p>
+                        <p className="text-[10px] text-muted-foreground">{t('common.lastVisit')}</p>
                       </div>
                     )}
                   </div>

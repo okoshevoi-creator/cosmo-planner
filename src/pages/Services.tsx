@@ -4,6 +4,7 @@ import { Plus, Clock } from 'lucide-react';
 import PageHeader from '@/components/layout/PageHeader';
 import { Button } from '@/components/ui/button';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import ServiceDialog from '@/components/services/ServiceDialog';
 import { Service } from '@/types';
 import { cn } from '@/lib/utils';
@@ -17,6 +18,7 @@ const categoryColors: Record<string, string> = {
 
 const Services = () => {
   const { services } = useData();
+  const { t } = useSettings();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedService, setSelectedService] = useState<Service | undefined>();
   
@@ -41,8 +43,8 @@ const Services = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-12">
         <PageHeader
-          title="Servicii"
-          subtitle={`${services.length} servicii disponibile`}
+          title={t('services.title')}
+          subtitle={t('services.available').replace('{count}', String(services.length))}
           action={
             <Button size="icon" className="rounded-xl shadow-soft" onClick={handleAdd}>
               <Plus className="h-5 w-5" />
@@ -65,7 +67,7 @@ const Services = () => {
                 : 'bg-card text-muted-foreground border-border/50 hover:border-primary/50'
             )}
           >
-            Toate
+            {t('common.all')}
           </button>
           {categories.map((category) => (
             <button
@@ -122,7 +124,7 @@ const Services = () => {
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1.5 text-muted-foreground">
                       <Clock className="h-4 w-4" />
-                      <span className="text-sm">{service.duration} min</span>
+                      <span className="text-sm">{service.duration} {t('common.min')}</span>
                     </div>
                   </div>
                 </div>
@@ -131,7 +133,7 @@ const Services = () => {
                   <p className="text-2xl font-display font-semibold text-primary">
                     {service.price}
                   </p>
-                  <p className="text-xs text-muted-foreground">MDL</p>
+                  <p className="text-xs text-muted-foreground">{t('common.currency')}</p>
                 </div>
               </div>
             </motion.div>

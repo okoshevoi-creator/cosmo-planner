@@ -67,11 +67,11 @@ const Settings = () => {
       try {
         await navigator.share({
           files: [file],
-          title: 'Backup Date Salon',
+          title: t('settings.backup'),
         });
         toast({
           title: t('settings.export'),
-          description: 'Datele au fost exportate cu succes!',
+          description: t('settings.dataExported'),
         });
         return;
       } catch (error) {
@@ -93,7 +93,7 @@ const Settings = () => {
     URL.revokeObjectURL(url);
     toast({
       title: t('settings.export'),
-      description: 'Datele au fost exportate cu succes!',
+      description: t('settings.dataExported'),
     });
   };
 
@@ -111,12 +111,12 @@ const Settings = () => {
             importData(content);
             toast({
               title: t('settings.import'),
-              description: 'Datele au fost importate cu succes!',
+              description: t('settings.dataImported'),
             });
           } catch {
             toast({
-              title: 'Eroare',
-              description: 'Fișierul nu este valid.',
+              title: t('settings.error'),
+              description: t('settings.invalidFile'),
               variant: 'destructive',
             });
           }
@@ -132,10 +132,10 @@ const Settings = () => {
 
     if (editingCategory) {
       updateCategory(editingCategory.id, categoryName);
-      toast({ title: 'Succes', description: 'Categoria a fost actualizată.' });
+      toast({ title: t('settings.success'), description: t('settings.categoryUpdated') });
     } else {
       addCategory({ name: categoryName, type: categoryType });
-      toast({ title: 'Succes', description: 'Categoria a fost adăugată.' });
+      toast({ title: t('settings.success'), description: t('settings.categoryAdded') });
     }
 
     setCategoryDialogOpen(false);
@@ -158,7 +158,7 @@ const Settings = () => {
   const confirmDeleteCategory = () => {
     if (categoryToDelete) {
       deleteCategory(categoryToDelete.id);
-      toast({ title: 'Succes', description: 'Categoria a fost ștearsă.' });
+      toast({ title: t('settings.success'), description: t('settings.categoryDeleted') });
     }
     setDeleteDialogOpen(false);
     setCategoryToDelete(null);
@@ -221,7 +221,7 @@ const Settings = () => {
                     <div className="space-y-0.5">
                       <Label>{themeMode === 'dark' ? t('settings.dark') : t('settings.light')}</Label>
                       <p className="text-sm text-muted-foreground">
-                        {themeMode === 'dark' ? 'Mod întunecat activ' : 'Mod luminos activ'}
+                        {themeMode === 'dark' ? t('settings.darkModeActive') : t('settings.lightModeActive')}
                       </p>
                     </div>
                     <Switch
@@ -408,7 +408,7 @@ const Settings = () => {
                 <CardHeader>
                   <CardTitle className="text-base">{t('settings.backup')}</CardTitle>
                   <CardDescription>
-                    Exportați sau importați datele aplicației pentru backup.
+                    {t('settings.backupDescription')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
@@ -435,7 +435,7 @@ const Settings = () => {
               {editingCategory ? t('common.edit') : t('settings.addCategory')}
             </DialogTitle>
             <DialogDescription>
-              {editingCategory ? 'Modificați numele categoriei.' : 'Adăugați o nouă categorie.'}
+              {editingCategory ? t('settings.editCategory') : t('settings.addNewCategory')}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -444,19 +444,19 @@ const Settings = () => {
               <Input
                 value={categoryName}
                 onChange={(e) => setCategoryName(e.target.value)}
-                placeholder="Introduceți numele..."
+                placeholder={t('settings.categoryName')}
               />
             </div>
             {!editingCategory && (
               <div className="space-y-2">
-                <Label>Tip</Label>
+                <Label>{t('services.category')}</Label>
                 <Select value={categoryType} onValueChange={(v) => setCategoryType(v as 'service' | 'expense')}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="service">Serviciu</SelectItem>
-                    <SelectItem value="expense">Cheltuială</SelectItem>
+                    <SelectItem value="service">{t('services.title')}</SelectItem>
+                    <SelectItem value="expense">{t('expenses.title')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -475,9 +475,9 @@ const Settings = () => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Ștergeți categoria?</AlertDialogTitle>
+            <AlertDialogTitle>{t('common.delete')}?</AlertDialogTitle>
             <AlertDialogDescription>
-              Această acțiune nu poate fi anulată. Categoria "{categoryToDelete?.name}" va fi ștearsă permanent.
+              {categoryToDelete?.name}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

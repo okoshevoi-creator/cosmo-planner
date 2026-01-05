@@ -7,6 +7,7 @@ import StatCard from '@/components/ui/stat-card';
 import TodayAppointments from '@/components/dashboard/TodayAppointments';
 import QuickActions from '@/components/dashboard/QuickActions';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import { Appointment } from '@/types';
 import { useState } from 'react';
 import AppointmentDialog from '@/components/appointments/AppointmentDialog';
@@ -14,6 +15,7 @@ import AppointmentDialog from '@/components/appointments/AppointmentDialog';
 const Dashboard = () => {
   const navigate = useNavigate();
   const { appointments, clients, expenses } = useData();
+  const { t } = useSettings();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingAppointment, setEditingAppointment] = useState<Appointment | undefined>();
 
@@ -54,9 +56,9 @@ const Dashboard = () => {
 
   const greeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return 'Bună dimineața';
-    if (hour < 18) return 'Bună ziua';
-    return 'Bună seara';
+    if (hour < 12) return t('dashboard.goodMorning');
+    if (hour < 18) return t('dashboard.goodAfternoon');
+    return t('dashboard.goodEvening');
   };
 
   const handleEdit = (appointment: Appointment) => {
@@ -77,7 +79,7 @@ const Dashboard = () => {
             {greeting()} ✨
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Ai {todayAppointments.length} programări pentru azi
+            {t('dashboard.appointmentsFor').replace('{count}', String(todayAppointments.length))}
           </p>
         </motion.div>
 
@@ -89,28 +91,28 @@ const Dashboard = () => {
         {/* Stats Grid */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <StatCard
-            title="Programări Azi"
+            title={t('dashboard.todayAppointments')}
             value={todayAppointments.length}
             icon={<Calendar className="h-5 w-5" />}
             delay={0.1}
           />
           <StatCard
-            title="Venit Azi"
-            value={`${todayRevenue} MDL`}
+            title={t('dashboard.todayRevenue')}
+            value={`${todayRevenue} ${t('common.currency')}`}
             icon={<TrendingUp className="h-5 w-5" />}
             delay={0.2}
           />
           <StatCard
-            title="Clienți Activi"
+            title={t('dashboard.activeClients')}
             value={activeClients}
-            subtitle="Luna aceasta"
+            subtitle={t('dashboard.thisMonth')}
             icon={<Users className="h-5 w-5" />}
             delay={0.3}
           />
           <StatCard
-            title="Ore Planificate"
+            title={t('dashboard.plannedHours')}
             value={`${workedHours.toFixed(1)}h`}
-            subtitle="Azi"
+            subtitle={t('dashboard.today')}
             icon={<Clock className="h-5 w-5" />}
             delay={0.4}
           />
@@ -124,13 +126,13 @@ const Dashboard = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-display font-semibold text-foreground">
-              Programări Azi
+              {t('dashboard.todaySchedule')}
             </h2>
             <button 
               onClick={() => navigate('/appointments')}
               className="text-xs text-primary font-medium flex items-center gap-1"
             >
-              Vezi toate <ArrowRight className="h-3 w-3" />
+              {t('dashboard.viewAll')} <ArrowRight className="h-3 w-3" />
             </button>
           </div>
           <TodayAppointments appointments={todayAppointments} onEdit={handleEdit} />

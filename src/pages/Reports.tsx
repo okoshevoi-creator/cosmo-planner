@@ -7,30 +7,34 @@ import {
   startOfYear, endOfYear, isWithinInterval, 
   format, subDays, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval
 } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { ro, ru, enUS } from 'date-fns/locale';
 import PageHeader from '@/components/layout/PageHeader';
 import StatCard from '@/components/ui/stat-card';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import { cn } from '@/lib/utils';
 
 type PeriodType = 'month' | 'year' | 'custom';
-
-const periodLabels: Record<PeriodType, string> = {
-  month: 'Luna',
-  year: 'Anul',
-  custom: 'Personalizat',
-};
 
 const COLORS = ['hsl(350, 35%, 70%)', 'hsl(38, 60%, 70%)', 'hsl(140, 25%, 75%)', 'hsl(200, 50%, 60%)', 'hsl(280, 40%, 65%)', 'hsl(20, 60%, 65%)'];
 
 const Reports = () => {
   const { appointments, clients, services, expenses } = useData();
+  const { t, language } = useSettings();
   const [period, setPeriod] = useState<PeriodType>('month');
   const [customStart, setCustomStart] = useState<Date | undefined>(subDays(new Date(), 30));
   const [customEnd, setCustomEnd] = useState<Date | undefined>(new Date());
+
+  const dateLocale = language === 'ru' ? ru : language === 'en' ? enUS : ro;
+
+  const periodLabels: Record<PeriodType, string> = {
+    month: t('reports.month'),
+    year: t('reports.year'),
+    custom: t('reports.custom'),
+  };
 
   // Calculate date range based on period
   const dateRange = useMemo(() => {
@@ -68,7 +72,7 @@ const Reports = () => {
 
   const totalExpenses = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
   const profit = totalRevenue - totalExpenses;
-  const totalAppointments = filteredAppointments.length;
+  const totalAppointmentsCount = filteredAppointments.length;
   const completedAppointments = filteredAppointments.filter(a => a.status === 'completed').length;
   const cancelledAppointments = filteredAppointments.filter(a => a.status === 'cancelled').length;
 
@@ -89,7 +93,7 @@ const Reports = () => {
             .filter(e => isWithinInterval(new Date(e.date), { start: monthStart, end: monthEnd }))
             .reduce((sum, e) => sum + e.amount, 0);
           return {
-            label: format(month, 'MMM', { locale: ro }),
+            label: format(month, 'MMM', { locale: dateLocale }),
             revenue,
             expenses: expenseTotal,
           };
@@ -127,7 +131,7 @@ const Reports = () => {
         expenses: expenseTotal,
       };
     });
-  }, [dateRange, filteredAppointments, filteredExpenses]);
+  }, [dateRange, filteredAppointments, filteredExpenses, dateLocale]);
 
   // Top services (only from completed appointments)
   const topServices = useMemo(() => {
@@ -188,21 +192,13 @@ const Reports = () => {
 
   // Expense breakdown
   const expenseBreakdown = useMemo(() => {
-    const categoryLabels: Record<string, string> = {
-      produse: 'Produse',
-      ustensile: 'Ustensile',
-      chirie: 'Chirie',
-      utilitati: 'Utilități',
-      marketing: 'Marketing',
-      altele: 'Altele',
-    };
     const breakdown = new Map<string, number>();
     filteredExpenses.forEach(e => {
       const existing = breakdown.get(e.category) || 0;
       breakdown.set(e.category, existing + e.amount);
     });
     return Array.from(breakdown.entries()).map(([category, amount]) => ({
-      name: categoryLabels[category] || category,
+      name: category.charAt(0).toUpperCase() + category.slice(1),
       value: amount,
     }));
   }, [filteredExpenses]);
@@ -211,8 +207,8 @@ const Reports = () => {
     <div className="min-h-screen bg-background pb-24">
       <div className="px-4 pt-12">
         <PageHeader
-          title="Rapoarte"
-          subtitle={`${format(dateRange.start, 'd MMM', { locale: ro })} - ${format(dateRange.end, 'd MMM yyyy', { locale: ro })}`}
+          title={t('reports.title')}
+          subtitle={`${format(dateRange.start, 'd MMM', { locale: dateLocale })} - ${format(dateRange.end, 'd MMM yyyy', { locale: dateLocale })}`}
         />
 
         {/* Period Selector */}
@@ -244,7 +240,7 @@ const Reports = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1">
-                  {customStart ? format(customStart, 'dd.MM.yyyy') : 'Data început'}
+                  {customStart ? format(customStart, 'dd.MM.yyyy') : t('common.startDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -259,7 +255,7 @@ const Reports = () => {
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1">
-                  {customEnd ? format(customEnd, 'dd.MM.yyyy') : 'Data sfârșit'}
+                  {customEnd ? format(customEnd, 'dd.MM.yyyy') : t('common.endDate')}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -277,28 +273,28 @@ const Reports = () => {
         {/* Main Stats */}
         <div className="grid grid-cols-2 gap-3 mb-6">
           <StatCard
-            title="Venituri"
-            value={`${totalRevenue} MDL`}
+            title={t('reports.revenue')}
+            value={`${totalRevenue} ${t('common.currency')}`}
             icon={<TrendingUp className="h-5 w-5" />}
             delay={0.1}
           />
           <StatCard
-            title="Cheltuieli"
-            value={`${totalExpenses} MDL`}
+            title={t('reports.expenses')}
+            value={`${totalExpenses} ${t('common.currency')}`}
             icon={<Wallet className="h-5 w-5" />}
             delay={0.2}
           />
           <StatCard
-            title="Profit"
-            value={`${profit} MDL`}
+            title={t('reports.profit')}
+            value={`${profit} ${t('common.currency')}`}
             icon={<DollarSign className="h-5 w-5" />}
             trend={profit >= 0 ? { value: 0, isPositive: true } : { value: 0, isPositive: false }}
             delay={0.3}
           />
           <StatCard
-            title="Programări"
-            value={totalAppointments}
-            subtitle={`${completedAppointments} finalizate`}
+            title={t('reports.totalAppointments')}
+            value={totalAppointmentsCount}
+            subtitle={`${completedAppointments} ${t('common.completed')}`}
             icon={<Calendar className="h-5 w-5" />}
             delay={0.4}
           />
@@ -312,16 +308,16 @@ const Reports = () => {
           className="bg-card rounded-2xl p-4 mb-6 border border-border/50 shadow-card"
         >
           <h3 className="text-sm font-semibold text-foreground mb-2">
-            Venituri vs Cheltuieli
+            {t('reports.revenueVsExpenses')}
           </h3>
           <div className="flex items-center gap-4 mb-3">
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-primary" />
-              <span className="text-xs text-muted-foreground">Venituri</span>
+              <span className="text-xs text-muted-foreground">{t('reports.revenue')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-destructive" />
-              <span className="text-xs text-muted-foreground">Cheltuieli</span>
+              <span className="text-xs text-muted-foreground">{t('reports.expenses')}</span>
             </div>
           </div>
           <div className="h-40">
@@ -348,8 +344,8 @@ const Reports = () => {
                     fontSize: '12px',
                   }}
                   formatter={(value: number, name: string) => [
-                    `${value} MDL`, 
-                    name === 'revenue' ? 'Venituri' : 'Cheltuieli'
+                    `${value} ${t('common.currency')}`, 
+                    name === 'revenue' ? t('reports.revenue') : t('reports.expenses')
                   ]}
                 />
                 <Line 
@@ -382,7 +378,7 @@ const Reports = () => {
             className="bg-card rounded-2xl p-4 mb-6 border border-border/50 shadow-card"
           >
             <h3 className="text-sm font-semibold text-foreground mb-4">
-              Distribuție Cheltuieli
+              {t('reports.expenseBreakdown')}
             </h3>
             <div className="space-y-3">
               {expenseBreakdown
@@ -402,7 +398,7 @@ const Reports = () => {
                           <span className="text-foreground font-medium">{item.name}</span>
                         </div>
                         <span className="text-muted-foreground">
-                          {item.value} MDL ({percentage.toFixed(0)}%)
+                          {item.value} {t('common.currency')} ({percentage.toFixed(0)}%)
                         </span>
                       </div>
                       <div className="h-2 bg-secondary rounded-full overflow-hidden">
@@ -430,13 +426,13 @@ const Reports = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-foreground">
-              Top Servicii
+              {t('reports.topServices')}
             </h3>
             <Sparkles className="h-4 w-4 text-primary" />
           </div>
           {topServices.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Nu există date pentru această perioadă
+              {t('reports.noDataPeriod')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -453,11 +449,11 @@ const Reports = () => {
                       {service.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {service.count} rezervări
+                      {service.count} {t('common.reservations')}
                     </p>
                   </div>
                   <span className="text-sm font-semibold text-primary">
-                    {service.revenue} MDL
+                    {service.revenue} {t('common.currency')}
                   </span>
                 </div>
               ))}
@@ -474,13 +470,13 @@ const Reports = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-foreground">
-              Clienți Fideli (după vizite)
+              {t('reports.loyalClients')}
             </h3>
             <Users className="h-4 w-4 text-primary" />
           </div>
           {topClientsByVisits.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Nu există date pentru această perioadă
+              {t('reports.noDataPeriod')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -497,11 +493,11 @@ const Reports = () => {
                       {client.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {client.visits} vizite
+                      {client.visits} {t('common.visits').toLowerCase()}
                     </p>
                   </div>
                   <span className="text-sm font-semibold text-accent">
-                    {client.revenue} MDL
+                    {client.revenue} {t('common.currency')}
                   </span>
                 </div>
               ))}
@@ -518,13 +514,13 @@ const Reports = () => {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-foreground">
-              Clienți cu cel mai mare venit
+              {t('reports.topRevenueClients')}
             </h3>
             <TrendingUp className="h-4 w-4 text-primary" />
           </div>
           {topClientsByRevenue.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-4">
-              Nu există date pentru această perioadă
+              {t('reports.noDataPeriod')}
             </p>
           ) : (
             <div className="space-y-3">
@@ -541,11 +537,11 @@ const Reports = () => {
                       {client.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {client.visits} vizite
+                      {client.visits} {t('common.visits').toLowerCase()}
                     </p>
                   </div>
                   <span className="text-sm font-semibold text-primary">
-                    {client.revenue} MDL
+                    {client.revenue} {t('common.currency')}
                   </span>
                 </div>
               ))}
