@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSettings, ThemeMode, ColorTheme, Language, Category } from '@/context/SettingsContext';
 import { useData } from '@/context/DataContext';
 import { useToast } from '@/hooks/use-toast';
+import ExportDataButton from '@/components/settings/ExportDataButton';
 import {
   Dialog,
   DialogContent,
@@ -56,46 +57,6 @@ const Settings = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [categoryToDelete, setCategoryToDelete] = useState<Category | null>(null);
 
-  const handleExport = async () => {
-    const data = exportData();
-    const fileName = `beauty-salon-backup-${new Date().toISOString().split('T')[0]}.json`;
-    const blob = new Blob([data], { type: 'application/json' });
-    const file = new File([blob], fileName, { type: 'application/json' });
-
-    // Try using Web Share API for mobile devices
-    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-      try {
-        await navigator.share({
-          files: [file],
-          title: t('settings.backup'),
-        });
-        toast({
-          title: t('settings.export'),
-          description: t('settings.dataExported'),
-        });
-        return;
-      } catch (error) {
-        // User cancelled or share failed, fall through to download method
-        if ((error as Error).name === 'AbortError') {
-          return; // User cancelled, don't show error
-        }
-      }
-    }
-
-    // Fallback for desktop or if share API not available
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    toast({
-      title: t('settings.export'),
-      description: t('settings.dataExported'),
-    });
-  };
 
   const handleImport = () => {
     const input = document.createElement('input');
@@ -412,10 +373,7 @@ const Settings = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <Button onClick={handleExport} className="w-full" variant="outline">
-                    <Download className="h-4 w-4 mr-2" />
-                    {t('settings.export')}
-                  </Button>
+                  <ExportDataButton getJson={exportData} />
                   <Button onClick={handleImport} className="w-full" variant="outline">
                     <Upload className="h-4 w-4 mr-2" />
                     {t('settings.import')}

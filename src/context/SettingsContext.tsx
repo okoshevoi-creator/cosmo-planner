@@ -132,6 +132,13 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.invalidFile': 'Fișierul nu este valid.',
     'settings.dataExported': 'Datele au fost exportate cu succes!',
     'settings.dataImported': 'Datele au fost importate cu succes!',
+    'settings.exportHint': 'Pe Android fișierul ajunge de obicei în Descărcări. Pe iPhone se deschide meniul Share — alege „Save to Files”.',
+    'settings.exportFile': 'Salvează fișierul',
+    'settings.copyBackup': 'Copiază backup',
+    'settings.backupCopied': 'Backup copiat în clipboard.',
+    'settings.fileName': 'Nume fișier',
+    'settings.exportFailed': 'Nu s-a putut exporta fișierul.',
+    'settings.copyFailed': 'Nu s-a putut copia backup-ul.',
     
     // Reports
     'reports.title': 'Rapoarte',
@@ -285,6 +292,13 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.invalidFile': 'Файл недействителен.',
     'settings.dataExported': 'Данные успешно экспортированы!',
     'settings.dataImported': 'Данные успешно импортированы!',
+    'settings.exportHint': 'На Android файл обычно попадает в Загрузки. На iPhone откроется меню «Поделиться» — выберите “Save to Files”.',
+    'settings.exportFile': 'Сохранить файл',
+    'settings.copyBackup': 'Копировать backup',
+    'settings.backupCopied': 'Backup скопирован в буфер обмена.',
+    'settings.fileName': 'Имя файла',
+    'settings.exportFailed': 'Не удалось экспортировать файл.',
+    'settings.copyFailed': 'Не удалось скопировать backup.',
     
     // Reports
     'reports.title': 'Отчёты',
@@ -438,6 +452,13 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.invalidFile': 'Invalid file.',
     'settings.dataExported': 'Data exported successfully!',
     'settings.dataImported': 'Data imported successfully!',
+    'settings.exportHint': 'On Android it usually saves to Downloads. On iPhone it opens Share — choose “Save to Files”.',
+    'settings.exportFile': 'Save file',
+    'settings.copyBackup': 'Copy backup',
+    'settings.backupCopied': 'Backup copied to clipboard.',
+    'settings.fileName': 'File name',
+    'settings.exportFailed': 'Could not export the file.',
+    'settings.copyFailed': 'Could not copy the backup.',
     
     // Reports
     'reports.title': 'Reports',
