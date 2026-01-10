@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { format } from 'date-fns';
-import { ro } from 'date-fns/locale';
+import { ro, ru, enUS } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import {
   Dialog,
@@ -32,18 +32,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import { Appointment } from '@/types';
 import { cn } from '@/lib/utils';
-
-const formSchema = z.object({
-  clientId: z.string().min(1, 'Selectează un client'),
-  serviceId: z.string().min(1, 'Selectează un serviciu'),
-  date: z.date({ required_error: 'Selectează o dată' }),
-  time: z.string().min(1, 'Introdu ora'),
-  notes: z.string().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
 
 interface AppointmentDialogProps {
   open: boolean;
@@ -54,7 +45,20 @@ interface AppointmentDialogProps {
 
 const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: AppointmentDialogProps) => {
   const { clients, services, addAppointment, updateAppointment, deleteAppointment } = useData();
+  const { t, language } = useSettings();
   const isEditing = !!appointment;
+
+  const dateLocale = language === 'ru' ? ru : language === 'en' ? enUS : ro;
+
+  const formSchema = z.object({
+    clientId: z.string().min(1, t('appointments.validation.selectClient')),
+    serviceId: z.string().min(1, t('appointments.validation.selectService')),
+    date: z.date({ required_error: t('appointments.validation.selectDate') }),
+    time: z.string().min(1, t('appointments.validation.enterTime')),
+    notes: z.string().optional(),
+  });
+
+  type FormData = z.infer<typeof formSchema>;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -67,7 +71,6 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
     },
   });
 
-  // Reset form when dialog opens with new data
   useEffect(() => {
     if (open) {
       form.reset({
@@ -123,7 +126,7 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Editează Programare' : 'Programare Nouă'}
+            {isEditing ? t('appointments.editAppointment') : t('appointments.newAppointment')}
           </DialogTitle>
         </DialogHeader>
 
@@ -134,11 +137,11 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               name="clientId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Client</FormLabel>
+                  <FormLabel>{t('appointments.client')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selectează client" />
+                        <SelectValue placeholder={t('appointments.selectClient')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -159,17 +162,17 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               name="serviceId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Serviciu</FormLabel>
+                  <FormLabel>{t('appointments.service')}</FormLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selectează serviciu" />
+                        <SelectValue placeholder={t('appointments.selectService')} />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {services.map(service => (
                         <SelectItem key={service.id} value={service.id}>
-                          {service.name} - {service.price} MDL ({service.duration} min)
+                          {service.name} - {service.price} MDL ({service.duration} {t('common.min')})
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -183,7 +186,7 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               <div className="p-3 rounded-xl bg-primary/10 text-sm">
                 <p className="font-medium text-primary">{selectedService.name}</p>
                 <p className="text-muted-foreground">
-                  {selectedService.duration} min • {selectedService.price} MDL
+                  {selectedService.duration} {t('common.min')} • {selectedService.price} MDL
                 </p>
               </div>
             )}
@@ -193,7 +196,7 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               name="date"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Data</FormLabel>
+                  <FormLabel>{t('appointments.date')}</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -205,9 +208,9 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
                           )}
                         >
                           {field.value ? (
-                            format(field.value, 'PPP', { locale: ro })
+                            format(field.value, 'PPP', { locale: dateLocale })
                           ) : (
-                            <span>Alege o dată</span>
+                            <span>{t('appointments.chooseDate')}</span>
                           )}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                         </Button>
@@ -233,7 +236,7 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               name="time"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Ora</FormLabel>
+                  <FormLabel>{t('appointments.time')}</FormLabel>
                   <FormControl>
                     <Input type="time" {...field} />
                   </FormControl>
@@ -247,10 +250,10 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note (opțional)</FormLabel>
+                  <FormLabel>{t('appointments.notesOptional')}</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Adaugă note..." 
+                      placeholder={t('appointments.addNotes')} 
                       className="resize-none"
                       {...field} 
                     />
@@ -268,11 +271,11 @@ const AppointmentDialog = ({ open, onOpenChange, appointment, defaultDate }: App
                   onClick={handleDelete}
                   className="flex-1"
                 >
-                  Șterge
+                  {t('common.delete')}
                 </Button>
               )}
               <Button type="submit" className="flex-1">
-                {isEditing ? 'Salvează' : 'Adaugă'}
+                {isEditing ? t('common.save') : t('common.add')}
               </Button>
             </div>
           </form>

@@ -20,16 +20,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useData } from '@/context/DataContext';
+import { useSettings } from '@/context/SettingsContext';
 import { Client } from '@/types';
-
-const formSchema = z.object({
-  name: z.string().min(2, 'Numele trebuie să aibă minim 2 caractere'),
-  phone: z.string().min(6, 'Numărul de telefon trebuie să aibă minim 6 cifre'),
-  email: z.string().email('Email invalid').optional().or(z.literal('')),
-  notes: z.string().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
 
 interface ClientDialogProps {
   open: boolean;
@@ -39,7 +31,17 @@ interface ClientDialogProps {
 
 const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
   const { addClient, updateClient, deleteClient } = useData();
+  const { t } = useSettings();
   const isEditing = !!client;
+
+  const formSchema = z.object({
+    name: z.string().min(2, t('clients.validation.nameMin')),
+    phone: z.string().min(6, t('clients.validation.phoneMin')),
+    email: z.string().email(t('clients.validation.emailInvalid')).optional().or(z.literal('')),
+    notes: z.string().optional(),
+  });
+
+  type FormData = z.infer<typeof formSchema>;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -92,7 +94,7 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>
-            {isEditing ? 'Editează Client' : 'Client Nou'}
+            {isEditing ? t('clients.editClient') : t('clients.newClient')}
           </DialogTitle>
         </DialogHeader>
 
@@ -103,9 +105,9 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Nume complet</FormLabel>
+                  <FormLabel>{t('clients.fullName')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: Maria Popescu" {...field} />
+                    <Input placeholder={t('clients.namePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,9 +119,9 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefon</FormLabel>
+                  <FormLabel>{t('clients.phone')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="Ex: 0722 123 456" {...field} />
+                    <Input placeholder={t('clients.phonePlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -131,11 +133,11 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email (opțional)</FormLabel>
+                  <FormLabel>{t('clients.emailOptional')}</FormLabel>
                   <FormControl>
                     <Input 
                       type="email" 
-                      placeholder="Ex: maria@email.com" 
+                      placeholder={t('clients.emailPlaceholder')} 
                       {...field} 
                     />
                   </FormControl>
@@ -149,10 +151,10 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
               name="notes"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Note (opțional)</FormLabel>
+                  <FormLabel>{t('clients.notesOptional')}</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Ex: Preferă programări dimineața, alergii..." 
+                      placeholder={t('clients.notesPlaceholder')} 
                       className="resize-none"
                       {...field} 
                     />
@@ -170,11 +172,11 @@ const ClientDialog = ({ open, onOpenChange, client }: ClientDialogProps) => {
                   onClick={handleDelete}
                   className="flex-1"
                 >
-                  Șterge
+                  {t('common.delete')}
                 </Button>
               )}
               <Button type="submit" className="flex-1">
-                {isEditing ? 'Salvează' : 'Adaugă'}
+                {isEditing ? t('common.save') : t('common.add')}
               </Button>
             </div>
           </form>
