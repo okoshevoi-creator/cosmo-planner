@@ -31,24 +31,7 @@ const buildFileName = () => {
   return `beauty-salon-backup-${date}.json`;
 };
 
-async function downloadJsonFile(fileName: string, json: string) {
-  const blob = new Blob([json], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = fileName;
-  // iOS Safari doesn't always honor the download attribute; opening in a new tab
-  // makes it clearer for users (they can then Share → Save to Files).
-  a.target = "_blank";
-  a.rel = "noopener noreferrer";
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-
-  // Give the browser time to start the download/open before revoking.
-  window.setTimeout(() => URL.revokeObjectURL(url), 1500);
-}
+// We no longer use downloadJsonFile - all downloads go through navigator.share or copy
 
 export default function ExportDataButton({ getJson }: ExportDataButtonProps) {
   const isMobile = useIsMobile();
@@ -61,27 +44,51 @@ export default function ExportDataButton({ getJson }: ExportDataButtonProps) {
 
   const handleExportFile = async () => {
     const json = getJson();
+    const blob = new Blob([json], { type: "application/json" });
+    const file = new File([blob], fileName, { type: "application/json" });
 
-    // Try Web Share first (best UX on mobile)
+    // Try Web Share API first - this works best on mobile devices
+    // and doesn't require storage permissions
     try {
-      const blob = new Blob([json], { type: "application/json" });
-      const file = new File([blob], fileName, { type: "application/json" });
-
       if (navigator.canShare?.({ files: [file] })) {
-        await navigator.share({ files: [file], title: t("settings.backup") });
+        await navigator.share({ 
+          files: [file], 
+          title: t("settings.backup"),
+          text: t("settings.exportHint")
+        });
         toast({ title: t("settings.export"), description: t("settings.dataExported") });
         setOpen(false);
         return;
       }
     } catch (error) {
-      // If user cancels share, don't treat it as a failure.
+      // If user cancels share, don't treat it as a failure
       if ((error as Error)?.name === "AbortError") return;
-      // fall through to download
+      // fall through to text share
     }
 
+    // Fallback: Try sharing as text (works on more devices)
     try {
-      await downloadJsonFile(fileName, json);
-      toast({ title: t("settings.export"), description: t("settings.dataExported") });
+      if (navigator.share) {
+        await navigator.share({
+          title: t("settings.backup"),
+          text: json,
+        });
+        toast({ title: t("settings.export"), description: t("settings.dataExported") });
+        setOpen(false);
+        return;
+      }
+    } catch (error) {
+      if ((error as Error)?.name === "AbortError") return;
+      // fall through to clipboard
+    }
+
+    // Final fallback: Copy to clipboard
+    try {
+      await navigator.clipboard.writeText(json);
+      toast({ 
+        title: t("settings.export"), 
+        description: t("settings.backupCopied") 
+      });
       setOpen(false);
     } catch {
       toast({
