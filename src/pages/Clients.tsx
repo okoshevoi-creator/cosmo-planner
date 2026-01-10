@@ -108,7 +108,7 @@ const Clients = () => {
                     {client.lastVisit && (
                       <div className="text-center flex-1">
                         <p className="text-xs font-medium text-foreground">
-                          {format(client.lastVisit, 'd MMM', { locale: dateLocale })}
+                          {format(client.lastVisit, 'd MMM yyyy', { locale: dateLocale })}
                         </p>
                         <p className="text-[10px] text-muted-foreground">{t('common.lastVisit')}</p>
                       </div>
