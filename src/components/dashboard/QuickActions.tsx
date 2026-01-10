@@ -1,14 +1,16 @@
 import { motion } from 'framer-motion';
 import { Plus, UserPlus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-const actions = [
-  { icon: Plus, label: 'Programare Nouă', color: 'bg-primary', path: '/appointments' },
-  { icon: UserPlus, label: 'Client Nou', color: 'bg-accent', path: '/clients' },
-];
+import { useSettings } from '@/context/SettingsContext';
 
 const QuickActions = () => {
   const navigate = useNavigate();
+  const { t } = useSettings();
+
+  const actions = [
+    { icon: Plus, label: t('dashboard.newAppointment'), color: 'bg-primary', path: '/appointments' },
+    { icon: UserPlus, label: t('dashboard.newClient'), color: 'bg-accent', path: '/clients' },
+  ];
 
   return (
     <div className="grid grid-cols-2 gap-3">
